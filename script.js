@@ -244,28 +244,24 @@ function animate() {
 
 
 
-['click', 'touchstart', 'touchend'].forEach(
-    function (type) {
-        window.addEventListener (type,
-            function(event) {
-                
-                const angle = Math.atan2(event.clientY - yHalf, event.clientX - xHalf)
+window.addEventListener ('touchend',
+    function(event) {
+        
+        const angle = Math.atan2(event.clientY - yHalf, event.clientX - xHalf)
 
-                const velocity = {
-                x: Math.cos(angle) * 5,
-                y: Math.sin(angle) * 5
-                }
+        const velocity = {
+        x: Math.cos(angle) * 5,
+        y: Math.sin(angle) * 5
+        }
 
-                projectiles.push(
-                    new Projectile(
-                        xHalf,
-                        yHalf,
-                        5,
-                        'white',
-                        velocity
-                    )
-                )
-            }
+        projectiles.push(
+            new Projectile(
+                xHalf,
+                yHalf,
+                5,
+                'white',
+                velocity
+            )
         )
     }
 )
@@ -282,6 +278,14 @@ function animate() {
 animate()
 
 spawnEnemies()
+
+
+
+
+
+
+
+
 
 
 
