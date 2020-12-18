@@ -10,6 +10,18 @@ canvas.height = window.innerHeight
 
 
 
+const playerScore = document.querySelector('#playerScore')
+
+const startTheGame = document.querySelector('#startGameButton')
+
+const gameMenu = document.querySelector('#endMenu')
+
+const bigScore = document.querySelector('#bigScore')
+
+
+
+
+
 
 
 
@@ -83,6 +95,45 @@ class Enemy {
 
 
 
+class Particle {
+    constructor(x, y, radius, colour, velocity) {
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.colour = colour
+        this.velocity = velocity
+        this.alpha = 1
+    }
+
+    draw() {
+        ctx.save()
+        ctx.globalAlpha = this.alpha
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true)
+        ctx.fillStyle = this.colour
+        ctx.fill()
+        ctx.restore()
+    }
+
+    update() {
+        this.draw()
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+        this.alpha -= 0.03
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,15 +141,22 @@ class Enemy {
 const xHalf = canvas.width/2
 const yHalf = canvas.height/2
 
-const player = new Player(xHalf, yHalf, 20, 'white')
+let player = new Player(xHalf, yHalf, 20, 'white')
 
-const projectiles = []
-const enemies = []
-
-
-
+let projectiles = []
+let enemies = []
+let particles = []
 
 
+function init() {
+    player = new Player(xHalf, yHalf, 20, 'white')
+    projectiles = []
+    enemies = []
+    particles = []
+    score = 0
+    playerScore.innerHTML = score
+    bigScore.innerHTML = score
+}
 
 
 
@@ -106,7 +164,12 @@ const enemies = []
 
 
 
-function spawnEnemies() {
+
+
+
+
+
+var spawnEnemies = 
     setInterval (
         function() {
             const radius = (Math.random() * (30 - 5)) + 5
@@ -128,7 +191,7 @@ function spawnEnemies() {
 
             const colour = `hsl(${Math.random() * 360}, 50%, 50%)`
 
-            const speedMult = Math.floor(Math.random() * 6)
+            const speedMult = Math.floor(Math.random() * 4)
 
             const velocity = {
             x: Math.cos(angle) * speedMult,
@@ -145,17 +208,28 @@ function spawnEnemies() {
                 )
             )
         },
-        300
+        500 // This number controls how many enemies appear in a second
     )
-}
+    
+
+
+
+
+
+
 
 
 let animationID
+
+let score = 0
 
 
 
 // Everything to do with projectiles
 function animate() {
+
+
+    // Recalls this function, so this basically creates an endless loop
     animationID = requestAnimationFrame(animate)
 
 
@@ -166,6 +240,18 @@ function animate() {
 
     // Creates the player
     player.draw()
+
+    particles.forEach(
+        function(particle, particleIndex) {
+
+            if (particle.alpha <= 0) {
+                particles.splice(particleIndex, 1)
+            } else {
+                particle.update()
+            }
+        }
+        
+    )
 
 
     // Looping through all projectiles
@@ -204,6 +290,10 @@ function animate() {
             // Ends the game once an enemy hits the player
             if ((distPlayer - enemy.radius - player.radius) < 1) {
                 cancelAnimationFrame(animationID)
+                gameMenu.style.display = 'flex'
+                bigScore.innerHTML = score
+                startTheGame.innerHTML = 'Restart'
+                clearInterval(spawnEnemies())
             }
 
 
@@ -218,16 +308,51 @@ function animate() {
 
                     // This is what happens when a projectile hits an enemy
                     if (dist - enemy.radius - projectile.radius < 1) {
-                        setTimeout(
 
+                        
 
-                            // Removes the enemy hit by the projectile from the enemy array
-                            function() {
-                                enemies.splice(enemyIndex, 1)
-                                projectiles.splice(projectilesIndex, 1)
-                            },
-                            0
-                        )
+                        for (let i = 0; i < enemy.radius * 2; i++) {
+                            particles.push(
+                                new Particle(
+                                    projectile.x,
+                                    projectile.y,
+                                    Math.random() * 2,
+                                    enemy.colour,
+                                    {
+                                        x: (Math.random() - 0.5) * (Math.random() * 6),
+                                        y: (Math.random() - 0.5) * (Math.random() * 6)
+                                    }
+                                )
+                            )
+                        }
+
+                        if (enemy.radius - 8 > 8) {
+
+                            gsap.to(enemy, {
+                                radius: enemy.radius - 8
+                            })
+
+                            setTimeout(
+                                function() {
+                                    projectiles.splice(projectilesIndex, 1)
+                                },
+                                0
+                            )
+
+                        } else {
+
+                            score += 1
+                            playerScore.innerHTML = score
+
+                            setTimeout(
+                                function() {
+                                    enemies.splice(enemyIndex, 1)
+                                    projectiles.splice(projectilesIndex, 1)
+                                },
+                                0
+                            )
+
+                        }
                     }
                 }
             )
@@ -271,6 +396,14 @@ function animate() {
 )
 
 
+startTheGame.addEventListener('click',
+    function() {
+        init ()
+        animate()
+        spawnEnemies
+        gameMenu.style.display = 'none'
+    }
+)
 
 
 
@@ -279,9 +412,9 @@ function animate() {
 
 
 
-animate()
 
-spawnEnemies()
+
+
 
 
 
