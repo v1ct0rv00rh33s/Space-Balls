@@ -169,47 +169,43 @@ function init() {
 
 
 
-var spawnEnemies = 
-    setInterval (
-        function() {
-            const radius = (Math.random() * (30 - 5)) + 5
+function spawnEnemiesFunction() {
+    const radius = (Math.random() * (30 - 5)) + 5
 
-            let x
-            let y
+    let x
+    let y
 
-            if (Math.random() < 0.5) {
-                x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius
-                
-                y = Math.random() * canvas.height
-            } else {
-                x = Math.random() * canvas.width
-                
-                y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius
-            }
+    if (Math.random() < 0.5) {
+        x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius
+        
+        y = Math.random() * canvas.height
+    } else {
+        x = Math.random() * canvas.width
+        
+        y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius
+    }
 
-            const angle = Math.atan2(yHalf - y, xHalf - x) 
+    const angle = Math.atan2(yHalf - y, xHalf - x) 
 
-            const colour = `hsl(${Math.random() * 360}, 50%, 50%)`
+    const colour = `hsl(${Math.random() * 360}, 50%, 50%)`
 
-            const speedMult = Math.floor(Math.random() * 4)
+    const speedMult = Math.floor(Math.random() * 4)
 
-            const velocity = {
-            x: Math.cos(angle) * speedMult,
-            y: Math.sin(angle) * speedMult
-            }
+    const velocity = {
+    x: Math.cos(angle) * speedMult,
+    y: Math.sin(angle) * speedMult
+    }
 
-            enemies.push(
-                new Enemy(
-                    x,
-                    y,
-                    radius,
-                    colour,
-                    velocity
-                )
-            )
-        },
-        500 // This number controls how many enemies appear in a second
+    enemies.push(
+        new Enemy(
+            x,
+            y,
+            radius,
+            colour,
+            velocity
+        )
     )
+}
     
 
 
@@ -293,7 +289,8 @@ function animate() {
                 gameMenu.style.display = 'flex'
                 bigScore.innerHTML = score
                 startTheGame.innerHTML = 'Restart'
-                clearInterval(spawnEnemies())
+                clearInterval(spawnEnemies)
+                window.removeEventListener
             }
 
 
@@ -369,38 +366,68 @@ function animate() {
 
 
 
-['click', 'touchstart', 'touchend'].forEach(
-    function (type) {
-        window.addEventListener (type,
-            function(event) {
-                
-                const angle = Math.atan2(event.clientY - yHalf, event.clientX - xHalf)
+window.addEventListener ('click',
+    function(event) {
+        
+        const angle = Math.atan2(event.clientY - yHalf, event.clientX - xHalf)
 
-                const velocity = {
-                x: Math.cos(angle) * 5,
-                y: Math.sin(angle) * 5
-                }
+        const velocity = {
+        x: Math.cos(angle) * 5,
+        y: Math.sin(angle) * 5
+        }
 
-                projectiles.push(
-                    new Projectile(
-                        xHalf,
-                        yHalf,
-                        5,
-                        'white',
-                        velocity
-                    )
-                )
-            }
+        projectiles.push(
+            new Projectile(
+                xHalf,
+                yHalf,
+                5,
+                'white',
+                velocity
+            )
         )
     }
 )
+
+
+
+window.addEventListener ('touchstart',
+    function(event) {
+        
+        const angle = Math.atan2(event.clientY - yHalf, event.clientX - xHalf)
+
+        const velocity = {
+        x: Math.cos(angle) * 5,
+        y: Math.sin(angle) * 5
+        }
+
+        projectiles.push(
+            new Projectile(
+                xHalf,
+                yHalf,
+                5,
+                'white',
+                velocity
+            )
+        )
+    }
+)
+
 
 
 startTheGame.addEventListener('click',
     function() {
         init ()
         animate()
-        spawnEnemies
+        spawnEnemies = setInterval(spawnEnemiesFunction, 500)
+        gameMenu.style.display = 'none'
+    }
+)
+
+startTheGame.addEventListener('touchstart',
+    function() {
+        init ()
+        animate()
+        spawnEnemies = setInterval(spawnEnemiesFunction, 500)
         gameMenu.style.display = 'none'
     }
 )

@@ -83,3 +83,16 @@ canvas {
     height: 100%;
     touch-action: none;
 }
+
+
+
+
+
+
+@media only screen 
+  and (max-device-width: 500px) {
+    #endMenu .menu {
+        width: 50vw;
+        height: 30vw;
+    }
+  }
