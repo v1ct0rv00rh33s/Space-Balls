@@ -7,6 +7,8 @@ html, body {
     
 }
 
+
+
 button {
     background: rgb(225,225,225);
     border: none;
@@ -94,5 +96,9 @@ canvas {
     #endMenu .menu {
         width: 50vw;
         height: 30vw;
+    }
+
+    canvas {
+        cursor: pointer;
     }
   }
